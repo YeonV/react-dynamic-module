@@ -1,0 +1,63 @@
+{
+  "name": "@yz-dev/react-dynamic-module",
+  "version": "0.1.2",
+  "private": false,
+  "description": "A powerful React component for dynamically loading premium or optional modules from a script URL with dependency injection.",
+  "author": {
+    "name": "YeonV",
+    "url": "https://github.com/YeonV"
+  },
+  "license": "MIT",
+  "keywords": [
+    "react",
+    "dynamic",
+    "module",
+    "loader",
+    "lazy",
+    "micro-frontend",
+    "premium",
+    "script-loader"
+  ],
+  "homepage": "https://github.com/YeonV/react-dynamic-module#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YeonV/react-dynamic-module.git"
+  },
+  "bugs": {
+    "url": "https://github.com/YeonV/react-dynamic-module/issues"
+  },
+  "type": "module",
+  "main": "./dist/yz-dev-react-dynamic-module.umd.js",
+  "module": "./dist/yz-dev-react-dynamic-module.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/yz-dev-react-dynamic-module.es.js",
+      "require": "./dist/yz-dev-react-dynamic-module.umd.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.2",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.7.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "typescript": "~5.8.3",
+    "vite": "^7.0.4",
+    "vite-plugin-dts": "^3.9.1"
+  },
+  "peerDependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  }
+}
