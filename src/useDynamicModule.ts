@@ -43,24 +43,38 @@ export const useDynamicModule = <P extends object>({
           throw new Error(`Module not found at ${src}`);
         }
 
+        // Set globals BEFORE loading script - they need to persist for runtime hooks
+        // CRITICAL: Only set if not already set, to avoid multiple React copies
+        if (!(window as any).React) {
+          (window as any).React = React;
+        }
+        if (!(window as any).ReactDOM) {
+          (window as any).ReactDOM = ReactDOM;
+        }
+        // Set other dependencies
+        Object.keys(dependencies).forEach(key => { (window as any)[key] = dependencies[key]; });
+
         await new Promise<void>((resolve, reject) => {
           const script = document.createElement('script');
           script.src = src;
           script.async = true;
           script.onload = () => resolve();
           script.onerror = (err) => reject(err);
-
-          const tempGlobals: Record<string, any> = { React, ReactDOM, ...dependencies };
-          Object.keys(tempGlobals).forEach(key => { (window as any)[key] = tempGlobals[key]; });
           document.body.appendChild(script);
         });
 
         const loadedGlobal = (window as any)[globalName];
-        const tempGlobals: Record<string, any> = { React, ReactDOM, ...dependencies };
-        Object.keys(tempGlobals).forEach(key => { delete (window as any)[key]; });
+        // DO NOT delete globals - components need them at runtime for hooks!
 
-        if (loadedGlobal && typeof loadedGlobal[exportName] === 'function') {
-          cacheEntry.Component = loadedGlobal[exportName];
+        const exportedValue = loadedGlobal?.[exportName];
+        // Check for React component (function or forwardRef/memo object)
+        const isValidComponent = exportedValue && (
+          typeof exportedValue === 'function' || 
+          (typeof exportedValue === 'object' && exportedValue.$$typeof)
+        );
+
+        if (isValidComponent) {
+          cacheEntry.Component = exportedValue;
           cacheEntry.status = 'available';
         } else {
           throw new Error(`Module loaded, but export '${exportName}' not found on 'window.${globalName}'.`);
@@ -68,8 +82,6 @@ export const useDynamicModule = <P extends object>({
       } catch (error) {
         console.warn(`[useDynamicModule] Could not load module from ${src}:`, (error as Error).message);
         cacheEntry.status = 'unavailable';
-        const tempGlobals: Record<string, any> = { React, ReactDOM, ...dependencies };
-        Object.keys(tempGlobals).forEach(key => { delete (window as any)[key]; });
       }
     })();
 
