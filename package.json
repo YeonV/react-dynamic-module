@@ -1,6 +1,6 @@
 {
   "name": "@yz-dev/react-dynamic-module",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": false,
   "description": "A powerful React component for dynamically loading premium or optional modules from a script URL with dependency injection.",
   "author": {
